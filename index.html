@@ -20,17 +20,16 @@
   <div class="container">
     <div class="row">
       <div class="col-md-3" id="gifs"> Gifs Test</div>
-      <form class="col-md-9" id="gif-form">
+      <form class="col-md-9 d-flex justify-content:end" id="gif-form">
         <label for="gif-input">Add your own GIFs!</label>
         <input type="text" id="gif-input"><br>
-        <input id="add-gif" type="submit" value="Add a GIF!">
+        <input class="btn btn-primary btn-sm" id="add-gif" type="submit" value="Add a GIF!">
       </form>
     </div>
   </div>
 
-
-
   <script type="text/javascript">
+    $(document).ready();
     // Example queryURL for Giphy API
     var queryURL = "https://api.giphy.com/v1/gifs/trending?api_key=2671Teog6Fu6EUNhGkTjjOZySghp6Z35";
 
@@ -40,13 +39,29 @@
       "Cooking"
     ];
 
-    for (i = 0; i < topics.length; i++) {
-      var btnTopic = $("<button>");
-      btnTopic.html(topics[i]);
-      btnTopic.addClass("btn btn-primary btn-sm");
-      $("#buttons").append(btnTopic);
-    };
+    function addButton() {
+      $("#buttons").empty();
+      for (i = 0; i < topics.length; i++) {
+        var btnTopic = $("<button>");
+        btnTopic.html(topics[i]);
+        btnTopic.addClass("btn btn-primary btn-sm");
+        $("#buttons").append(btnTopic);
+      };
+    }
 
+
+  $("#add-gif").on("click", function () {
+    event.preventDefault();
+    var topic = $("#gif-input").val().trim();
+    console.log(topic);
+    if (topic.length == 0) {
+      alert("Please enter a topic!!");
+    } else {
+      topics.push(topic);
+      addButton();
+    }
+  });
+  
 
     $.ajax({
       url: queryURL,
@@ -54,5 +69,7 @@
     }).then(function (response) {
       console.log(response);
     });
+
+    addButton();
   </script>
 </body>
