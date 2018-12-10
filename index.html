@@ -30,44 +30,59 @@
 
   <script type="text/javascript">
     $(document).ready();
-    // Example queryURL for Giphy API
-    var queryURL = "https://api.giphy.com/v1/gifs/trending?api_key=2671Teog6Fu6EUNhGkTjjOZySghp6Z35";
+     var queryURL = "https://api.giphy.com/v1/gifs/trending?api_key=2671Teog6Fu6EUNhGkTjjOZySghp6Z35";
 
+    //create an array of topics
     var topics = [
       "Music",
       "Travel",
       "Cooking"
     ];
 
+    //function to add buttons to the DOM
     function addButton() {
+      //remove all buttons already on the DOM
       $("#buttons").empty();
+      //loop through the array of topics and create buttons for each string
       for (i = 0; i < topics.length; i++) {
+        //create a button element for each string in the array
         var btnTopic = $("<button>");
+        //place the topic text onto the button
         btnTopic.html(topics[i]);
+        //add a class to the button
         btnTopic.addClass("btn btn-primary btn-sm");
+        //append the button to the div
         $("#buttons").append(btnTopic);
       };
     }
 
+    //Click event to add new topics 
+    $("#add-gif").on("click", function () {
+      event.preventDefault();
+      //Variable that store the new topic text
+      var topic = $("#gif-input").val().trim();
+      //if the user does not enter a topic they get an alert
+      if (topic.length == 0) {
+        alert("Please enter a topic!!");
+      } else {
+        //push the new topic to the array
+        topics.push(topic);
+        //call add button to add the new topic button to the DOM
+        addButton();
+      }
+    });
 
-  $("#add-gif").on("click", function () {
-    event.preventDefault();
-    var topic = $("#gif-input").val().trim();
-    console.log(topic);
-    if (topic.length == 0) {
-      alert("Please enter a topic!!");
-    } else {
-      topics.push(topic);
-      addButton();
-    }
-  });
-  
 
     $.ajax({
       url: queryURL,
       method: "GET"
     }).then(function (response) {
       console.log(response);
+      var gifURL = response.data.image_original_url;
+      var gifImage = $("<img>");
+      gifImage.attr("src", gifURL);
+      gifImage.attr("alt", "gif");
+      $("#gifs").prepend(gifImage);
     });
 
     addButton();
