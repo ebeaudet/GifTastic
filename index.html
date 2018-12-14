@@ -6,10 +6,24 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
   <title>Gettin' Giphy With It</title>
+
   <style>
     button {
       margin:5px;
     }
+
+    #gifs {
+      display:inline-flex;
+      flex-wrap: wrap;
+    }
+    .gifStyle {
+      margin:5px;
+    }
+
+    #gif-form{
+      align-content: center;
+    }
+
   </style>
 </head>
 
@@ -19,28 +33,57 @@
   </div>
   <div class="container">
     <div class="row">
-      <div class="col-md-3" id="gifs"> Gifs Test</div>
-      <form class="col-md-9 d-flex justify-content:end" id="gif-form">
+      <form class="col-md-12" id="gif-form">
         <label for="gif-input">Add your own GIFs!</label>
         <input type="text" id="gif-input"><br>
         <input class="btn btn-primary btn-sm" id="add-gif" type="submit" value="Add a GIF!">
-      </form>
+    </div>
+    </form>
+  </div>
+  <div class="row">
+    <div class="container ">
+      <div id="gifs"></div>
     </div>
   </div>
 
   <script type="text/javascript">
-    $(document).ready();
-     var queryURL = "https://api.giphy.com/v1/gifs/trending?api_key=2671Teog6Fu6EUNhGkTjjOZySghp6Z35";
-
     //create an array of topics
     var topics = [
       "Music",
       "Travel",
       "Cooking"
     ];
+    function displayGifs() {
+      var topic = $(this).attr("data-name");
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + topic + "&api_key=2671Teog6Fu6EUNhGkTjjOZySghp6Z35";
 
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      }).then(function (response) {
+        console.log(queryURL);
+        var results = response.data;
+       
+        for (var i = 0; i < 10; i++) {
+          var gifDiv = $("<div>");
+          gifDiv.addClass("gifStyle");
+
+          var p = $("<p>").text("Rating: " + results[i].rating);
+
+          var gifImage = $("<img>");
+
+          gifImage.attr("src", results[i].images.fixed_height_small.url);
+
+          gifDiv.append(p);
+          gifDiv.append(gifImage);
+
+          $("#gifs").prepend(gifDiv);
+        }
+
+      });
+    }
     //function to add buttons to the DOM
-    function addButton() {
+    var addButton = function () {
       //remove all buttons already on the DOM
       $("#buttons").empty();
       //loop through the array of topics and create buttons for each string
@@ -49,8 +92,9 @@
         var btnTopic = $("<button>");
         //place the topic text onto the button
         btnTopic.html(topics[i]);
+        btnTopic.attr("data-name", topics[i]);
         //add a class to the button
-        btnTopic.addClass("btn btn-primary btn-sm");
+        btnTopic.addClass("btn btn-primary btn-sm topic-btn ");
         //append the button to the div
         $("#buttons").append(btnTopic);
       };
@@ -70,21 +114,11 @@
         //call add button to add the new topic button to the DOM
         addButton();
       }
+
+
     });
-
-
-    $.ajax({
-      url: queryURL,
-      method: "GET"
-    }).then(function (response) {
-      console.log(response);
-      var gifURL = response.data.image_original_url;
-      var gifImage = $("<img>");
-      gifImage.attr("src", gifURL);
-      gifImage.attr("alt", "gif");
-      $("#gifs").prepend(gifImage);
-    });
-
     addButton();
+    console.log(topics);
+    $(document).on("click", ".topic-btn", displayGifs);
   </script>
 </body>
